@@ -4,8 +4,33 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useMaterials } from "@/hooks/useMaterials";
+import { useState } from "react";
 
-const materials = [
+const Marketplace = () => {
+  const { data: materials = [], isLoading } = useMaterials();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+
+  const filteredMaterials = materials.filter(material => {
+    const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         material.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || material.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">Loading materials...</div>
+        </div>
+      </div>
+    );
+  }
+
+  const mockMaterials = [
   {
     title: "Reclaimed Oak Floorboards",
     category: "Wood",
@@ -68,8 +93,7 @@ const materials = [
   }
 ];
 
-const Marketplace = () => {
-  return (
+return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
@@ -87,10 +111,12 @@ const Marketplace = () => {
               <Input 
                 placeholder="Search materials..." 
                 className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             
-            <Select defaultValue="all">
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-full md:w-48">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -100,6 +126,8 @@ const Marketplace = () => {
                 <SelectItem value="metal">Metal</SelectItem>
                 <SelectItem value="masonry">Masonry</SelectItem>
                 <SelectItem value="glass">Glass</SelectItem>
+                <SelectItem value="concrete">Concrete</SelectItem>
+                <SelectItem value="plumbing">Plumbing</SelectItem>
               </SelectContent>
             </Select>
 
@@ -122,11 +150,31 @@ const Marketplace = () => {
         </div>
 
         {/* Materials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {materials.map((material, index) => (
-            <MaterialCard key={index} {...material} />
-          ))}
-        </div>
+        {filteredMaterials.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              {materials.length === 0 
+                ? "No materials listed yet. Be the first to add one!"
+                : "No materials match your search."}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredMaterials.map((material) => (
+              <MaterialCard
+                key={material.id}
+                title={material.title}
+                category={material.category}
+                location={material.location}
+                quantity={material.quantity || ''}
+                price={`€${material.price}`}
+                postedDate="Recently"
+                image={material.images?.[0] || mockMaterials[0].image}
+                condition={material.condition}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,12 +1,18 @@
 import { NavLink } from "@/components/NavLink";
-import { Recycle, Package, Users, UserCircle, LayoutDashboard } from "lucide-react";
+import { Recycle, Package, Users, LayoutDashboard, Plus, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { UserMenu } from "./UserMenu";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const Navigation = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <nav className="border-b border-border bg-card sticky top-0 z-50 backdrop-blur-sm bg-card/95">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
           <Recycle className="h-7 w-7 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">Re:Build</h1>
         </div>
@@ -27,29 +33,43 @@ export const Navigation = () => {
             <Package className="h-4 w-4" />
             Marketplace
           </NavLink>
-          <NavLink 
-            to="/connections" 
-            className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-            activeClassName="text-foreground font-medium"
-          >
-            <Users className="h-4 w-4" />
-            Connections
-          </NavLink>
-          <NavLink 
-            to="/dashboard" 
-            className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-            activeClassName="text-foreground font-medium"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
-          </NavLink>
+          {user && (
+            <>
+              <NavLink 
+                to="/connections" 
+                className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                activeClassName="text-foreground font-medium"
+              >
+                <Users className="h-4 w-4" />
+                Connections
+              </NavLink>
+              <NavLink 
+                to="/dashboard" 
+                className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                activeClassName="text-foreground font-medium"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </NavLink>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon">
-            <UserCircle className="h-5 w-5" />
-          </Button>
-          <Button variant="default">List Materials</Button>
+          {user ? (
+            <>
+              <Button variant="default" className="gap-2">
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">List Materials</span>
+              </Button>
+              <UserMenu />
+            </>
+          ) : (
+            <Button onClick={() => navigate('/auth')} className="gap-2">
+              <LogIn className="h-4 w-4" />
+              Sign In
+            </Button>
+          )}
         </div>
       </div>
     </nav>

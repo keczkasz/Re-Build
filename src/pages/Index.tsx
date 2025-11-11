@@ -3,6 +3,8 @@ import { Hero } from "@/components/Hero";
 import { MaterialCard } from "@/components/MaterialCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Leaf, Users, Package } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const featuredMaterials = [
   {
@@ -38,6 +40,9 @@ const featuredMaterials = [
 ];
 
 const Index = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -116,11 +121,20 @@ const Index = () => {
             Whether you're demolishing, building, or designing — Re:Build connects you with the right materials and people.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" variant="secondary">
-              Get Started
+            <Button 
+              size="lg" 
+              variant="secondary"
+              onClick={() => navigate(user ? '/dashboard' : '/auth')}
+            >
+              {user ? 'Go to Dashboard' : 'Get Started'}
             </Button>
-            <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-              Learn More
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              onClick={() => navigate('/marketplace')}
+            >
+              Browse Marketplace
             </Button>
           </div>
         </div>
