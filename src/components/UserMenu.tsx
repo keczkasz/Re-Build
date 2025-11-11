@@ -44,9 +44,9 @@ export const UserMenu = () => {
           <User className="mr-2 h-4 w-4" />
           Dashboard
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/profile/edit')}>
           <Settings className="mr-2 h-4 w-4" />
-          Settings
+          Edit Profile
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>

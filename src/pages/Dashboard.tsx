@@ -1,9 +1,13 @@
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Package, Users, MessageCircle, TrendingUp, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -14,7 +18,7 @@ const Dashboard = () => {
             <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
             <p className="text-muted-foreground">Manage your materials, connections, and activity</p>
           </div>
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={() => navigate('/materials/new')}>
             <Plus className="h-4 w-4" />
             Add Material
           </Button>
@@ -131,6 +135,8 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

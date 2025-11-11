@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/Navigation";
 import { ConnectionCard } from "@/components/ConnectionCard";
+import { Footer } from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -103,6 +104,8 @@ const Connections = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Footer />
     </div>
   );
 };

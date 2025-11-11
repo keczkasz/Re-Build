@@ -2,9 +2,13 @@ import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { MaterialCard } from "@/components/MaterialCard";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/Footer";
 import { ArrowRight, Leaf, Users, Package } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import oakFloorboards from "@/../../public/images/oak-floorboards.jpg";
+import steelBeams from "@/../../public/images/steel-beams.jpg";
+import clayBricks from "@/../../public/images/clay-bricks.jpg";
 
 const featuredMaterials = [
   {
@@ -14,7 +18,7 @@ const featuredMaterials = [
     quantity: "~150 m²",
     price: "€45/m²",
     postedDate: "2 days ago",
-    image: "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=800&q=80",
+    image: oakFloorboards,
     condition: "Excellent"
   },
   {
@@ -24,7 +28,7 @@ const featuredMaterials = [
     quantity: "25 units",
     price: "€120/unit",
     postedDate: "5 days ago",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+    image: steelBeams,
     condition: "Good"
   },
   {
@@ -34,7 +38,7 @@ const featuredMaterials = [
     quantity: "~5000 pieces",
     price: "€0.85/piece",
     postedDate: "1 week ago",
-    image: "https://images.unsplash.com/photo-1582735689869-f0e8e4e1e3d4?w=800&q=80",
+    image: clayBricks,
     condition: "Very Good"
   }
 ];
@@ -139,6 +143,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

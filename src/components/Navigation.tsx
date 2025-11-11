@@ -58,7 +58,7 @@ export const Navigation = () => {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <Button variant="default" className="gap-2">
+              <Button variant="default" className="gap-2" onClick={() => navigate('/materials/new')}>
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">List Materials</span>
               </Button>

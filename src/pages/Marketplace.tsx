@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/Navigation";
 import { MaterialCard } from "@/components/MaterialCard";
+import { Footer } from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal } from "lucide-react";
@@ -172,10 +173,12 @@ return (
                 image={material.images?.[0] || mockMaterials[0].image}
                 condition={material.condition}
               />
-            ))}
+          ))}
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };
