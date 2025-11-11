@@ -6,9 +6,6 @@ import { Footer } from "@/components/Footer";
 import { ArrowRight, Leaf, Users, Package } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import oakFloorboards from "@/../../public/images/oak-floorboards.jpg";
-import steelBeams from "@/../../public/images/steel-beams.jpg";
-import clayBricks from "@/../../public/images/clay-bricks.jpg";
 
 const featuredMaterials = [
   {
@@ -18,7 +15,7 @@ const featuredMaterials = [
     quantity: "~150 m²",
     price: "€45/m²",
     postedDate: "2 days ago",
-    image: oakFloorboards,
+    image: "/images/oak-floorboards.jpg",
     condition: "Excellent"
   },
   {
@@ -28,7 +25,7 @@ const featuredMaterials = [
     quantity: "25 units",
     price: "€120/unit",
     postedDate: "5 days ago",
-    image: steelBeams,
+    image: "/images/steel-beams.jpg",
     condition: "Good"
   },
   {
@@ -38,7 +35,7 @@ const featuredMaterials = [
     quantity: "~5000 pieces",
     price: "€0.85/piece",
     postedDate: "1 week ago",
-    image: clayBricks,
+    image: "/images/clay-bricks.jpg",
     condition: "Very Good"
   }
 ];
