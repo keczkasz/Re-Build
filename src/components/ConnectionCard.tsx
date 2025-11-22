@@ -10,6 +10,7 @@ interface ConnectionCardProps {
   specialty: string;
   description: string;
   tags: string[];
+  onConnect: () => void;
 }
 
 export const ConnectionCard = ({
@@ -18,7 +19,8 @@ export const ConnectionCard = ({
   location,
   specialty,
   description,
-  tags
+  tags,
+  onConnect
 }: ConnectionCardProps) => {
   return (
     <Card className="hover:shadow-md transition-shadow duration-300">
@@ -51,7 +53,7 @@ export const ConnectionCard = ({
           ))}
         </div>
         
-        <Button className="w-full gap-2" variant="outline">
+        <Button className="w-full gap-2" variant="outline" onClick={onConnect}>
           <MessageCircle className="h-4 w-4" />
           Connect
         </Button>
