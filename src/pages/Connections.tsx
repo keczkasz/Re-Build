@@ -4,43 +4,127 @@ import { Footer } from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
-const connections = [
-  {
-    name: "EcoBuild Demolition",
-    type: "Demolition Contractor",
-    location: "Amsterdam, NL",
-    specialty: "Selective Demolition",
-    description: "Specialized in careful dismantling and material recovery from commercial buildings. 15+ years experience.",
-    tags: ["Concrete", "Steel", "Wood"]
-  },
-  {
-    name: "Studio Verde",
-    type: "Architecture Firm",
-    location: "Rotterdam, NL",
-    specialty: "Circular Design",
-    description: "Award-winning architects focusing on sustainable and circular building practices. Looking for reclaimed materials.",
-    tags: ["Sustainable Design", "Renovations", "Upcycling"]
-  },
-  {
-    name: "RecycleWorks NL",
-    type: "Material Processor",
-    location: "Utrecht, NL",
-    specialty: "Material Processing",
-    description: "Processing and preparing recovered materials for reuse. We connect suppliers with buyers.",
-    tags: ["Processing", "Quality Control", "Logistics"]
-  },
-  {
-    name: "Green Builder Co.",
-    type: "Construction Company",
-    location: "Den Haag, NL",
-    specialty: "Sustainable Construction",
-    description: "Building new homes and offices using 80%+ recovered materials. Seeking long-term material suppliers.",
-    tags: ["Residential", "Commercial", "Sustainable"]
-  }
-];
+interface Profile {
+  id: string;
+  full_name: string;
+  user_type: string;
+  location: string;
+  specialties: string[];
+  bio: string;
+  company_name?: string;
+}
 
 const Connections = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    loadProfiles();
+  }, []);
+
+  const loadProfiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .neq('id', user?.id);
+
+      if (error) throw error;
+      setProfiles(data || []);
+    } catch (error) {
+      console.error('Error loading profiles:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load connections",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConnect = async (recipientId: string, recipientName: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to connect with others",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Check if connection already exists
+      const { data: existing } = await supabase
+        .from('connections')
+        .select('*')
+        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${recipientId}),and(requester_id.eq.${recipientId},recipient_id.eq.${user.id})`)
+        .single();
+
+      if (existing) {
+        toast({
+          title: "Already connected",
+          description: "You already have a connection request with this user",
+        });
+        return;
+      }
+
+      // Create connection request
+      const { error } = await supabase
+        .from('connections')
+        .insert({
+          requester_id: user.id,
+          recipient_id: recipientId,
+          message: `Hi! I'd like to connect with you on Re:Build.`
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Connection request sent",
+        description: `Your connection request has been sent to ${recipientName}`,
+      });
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send connection request",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMessage = async (recipientId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to send messages",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Navigate to messages page
+    navigate('/messages');
+  };
+
+  const filteredProfiles = profiles.filter(profile => 
+    profile.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    profile.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    profile.user_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    profile.specialties?.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -58,6 +142,8 @@ const Connections = () => {
             <Input 
               placeholder="Search by name, location, or specialty..." 
               className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -68,38 +154,86 @@ const Connections = () => {
             <TabsTrigger value="all">All Connections</TabsTrigger>
             <TabsTrigger value="contractors">Contractors</TabsTrigger>
             <TabsTrigger value="designers">Designers</TabsTrigger>
-            <TabsTrigger value="processors">Processors</TabsTrigger>
+            <TabsTrigger value="recyclers">Recyclers</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {connections.map((connection, index) => (
-                <ConnectionCard key={index} {...connection} />
-              ))}
+              {loading ? (
+                <p className="text-muted-foreground col-span-2 text-center py-8">Loading connections...</p>
+              ) : filteredProfiles.length === 0 ? (
+                <p className="text-muted-foreground col-span-2 text-center py-8">No connections found</p>
+              ) : (
+                filteredProfiles.map((profile) => (
+                  <ConnectionCard 
+                    key={profile.id}
+                    name={profile.company_name || profile.full_name || 'Unknown'}
+                    type={profile.user_type || 'User'}
+                    location={profile.location || 'Location not specified'}
+                    specialty={profile.specialties?.[0] || 'General'}
+                    description={profile.bio || 'No description available'}
+                    tags={profile.specialties || []}
+                    onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
+                  />
+                ))
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="contractors" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {connections.filter(c => c.type.includes("Contractor") || c.type.includes("Construction")).map((connection, index) => (
-                <ConnectionCard key={index} {...connection} />
-              ))}
+              {filteredProfiles
+                .filter(p => p.user_type?.toLowerCase().includes('contractor') || p.user_type?.toLowerCase().includes('developer'))
+                .map((profile) => (
+                  <ConnectionCard 
+                    key={profile.id}
+                    name={profile.company_name || profile.full_name || 'Unknown'}
+                    type={profile.user_type || 'User'}
+                    location={profile.location || 'Location not specified'}
+                    specialty={profile.specialties?.[0] || 'General'}
+                    description={profile.bio || 'No description available'}
+                    tags={profile.specialties || []}
+                    onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
+                  />
+                ))}
             </div>
           </TabsContent>
 
           <TabsContent value="designers" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {connections.filter(c => c.type.includes("Architecture") || c.type.includes("Design")).map((connection, index) => (
-                <ConnectionCard key={index} {...connection} />
-              ))}
+              {filteredProfiles
+                .filter(p => p.user_type?.toLowerCase().includes('designer') || p.user_type?.toLowerCase().includes('architect') || p.user_type?.toLowerCase().includes('studio'))
+                .map((profile) => (
+                  <ConnectionCard 
+                    key={profile.id}
+                    name={profile.company_name || profile.full_name || 'Unknown'}
+                    type={profile.user_type || 'User'}
+                    location={profile.location || 'Location not specified'}
+                    specialty={profile.specialties?.[0] || 'General'}
+                    description={profile.bio || 'No description available'}
+                    tags={profile.specialties || []}
+                    onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
+                  />
+                ))}
             </div>
           </TabsContent>
 
-          <TabsContent value="processors" className="mt-6">
+          <TabsContent value="recyclers" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {connections.filter(c => c.type.includes("Processor")).map((connection, index) => (
-                <ConnectionCard key={index} {...connection} />
-              ))}
+              {filteredProfiles
+                .filter(p => p.user_type?.toLowerCase().includes('recycler'))
+                .map((profile) => (
+                  <ConnectionCard 
+                    key={profile.id}
+                    name={profile.company_name || profile.full_name || 'Unknown'}
+                    type={profile.user_type || 'User'}
+                    location={profile.location || 'Location not specified'}
+                    specialty={profile.specialties?.[0] || 'General'}
+                    description={profile.bio || 'No description available'}
+                    tags={profile.specialties || []}
+                    onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
+                  />
+                ))}
             </div>
           </TabsContent>
         </Tabs>

@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Recycle, Package, Users, LayoutDashboard, Plus, LogIn } from "lucide-react";
+import { Recycle, Package, Users, LayoutDashboard, Plus, LogIn, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "./UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,6 +42,14 @@ export const Navigation = () => {
               >
                 <Users className="h-4 w-4" />
                 Connections
+              </NavLink>
+              <NavLink 
+                to="/messages" 
+                className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                activeClassName="text-foreground font-medium"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Messages
               </NavLink>
               <NavLink 
                 to="/dashboard" 
