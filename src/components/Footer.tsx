@@ -94,12 +94,6 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
-            <div className="text-center md:text-left">
-              <p>© 2025 Dawid Konopka. All rights reserved.</p>
-              <p className="text-xs mt-1 text-gray-500">
-                You may NOT copy, modify, distribute, or use this code without explicit written permission.
-              </p>
-            </div>
             <div className="flex gap-6">
               <a href="#" className="hover:text-white transition-colors">
                 Privacy Policy
