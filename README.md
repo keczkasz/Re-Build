@@ -1,5 +1,13 @@
 # Welcome to your Lovable project
 
+## ⚖️ Copyright & License
+
+**Copyright © 2025 Dawid Konopka. All rights reserved.**
+
+This code is proprietary and confidential. You may NOT copy, modify, distribute, or use this code in any commercial or non-commercial project without explicit written permission from the author.
+
+See the [LICENSE](LICENSE) file for full terms and restrictions.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/3ba41737-e6fb-46b3-9707-8de9f0a5e7db
