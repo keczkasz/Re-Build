@@ -2,7 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Building2, MapPin, Calendar, DollarSign, MessageCircle, Loader2 } from "lucide-react";
+import { Building2, MapPin, Calendar, DollarSign, MessageCircle, Loader2, Award, Leaf, Recycle, TrendingDown } from "lucide-react";
 import { useProjects } from "@/hooks/useProjects";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +13,8 @@ import project1Floor from "/images/project-1-floorplan.jpg";
 import project1Visual from "/images/project-1-visualization.jpg";
 import project2Floor from "/images/project-2-floorplan.jpg";
 import project2Visual from "/images/project-2-visualization.jpg";
+import project3Floor from "/images/project-3-floorplan.jpg";
+import project3Visual from "/images/project-3-visualization.jpg";
 
 const projectImages: Record<string, { floorplan: string; visualization: string }> = {
   "Green Quarter Mixed-Use Development": {
@@ -22,6 +24,10 @@ const projectImages: Record<string, { floorplan: string; visualization: string }
   "Heritage Factory Adaptive Reuse": {
     floorplan: project2Floor,
     visualization: project2Visual,
+  },
+  "Eco-Luxury Designer Residence": {
+    floorplan: project3Floor,
+    visualization: project3Visual,
   },
 };
 
@@ -34,6 +40,33 @@ const projectContacts: Record<string, { name: string; role: string }> = {
   "Heritage Factory Adaptive Reuse": {
     name: "Eng. Piotr Zieliński",
     role: "Project Manager & Heritage Conservation Specialist",
+  },
+  "Eco-Luxury Designer Residence": {
+    name: "Katarzyna Lewandowska",
+    role: "Private Client & Design Enthusiast",
+  },
+};
+
+// Sustainability metrics for each project
+const projectMetrics: Record<string, { 
+  materialReuse: string; 
+  co2Savings: string;
+  certifications: string[];
+}> = {
+  "Green Quarter Mixed-Use Development": {
+    materialReuse: "85%",
+    co2Savings: "420 tons",
+    certifications: ["LEED Platinum", "BREEAM Outstanding", "Circular Economy Certified"],
+  },
+  "Heritage Factory Adaptive Reuse": {
+    materialReuse: "90%",
+    co2Savings: "280 tons",
+    certifications: ["Heritage Conservation Award", "BREEAM Excellent", "EU Green Building"],
+  },
+  "Eco-Luxury Designer Residence": {
+    materialReuse: "95%",
+    co2Savings: "65 tons",
+    certifications: ["Passive House", "Circular Economy Certified", "Zero Waste Design"],
   },
 };
 
@@ -86,6 +119,11 @@ export default function Projects() {
                   name: "Project Manager", 
                   role: "Project Coordinator" 
                 };
+                const metrics = projectMetrics[project.title] || {
+                  materialReuse: "N/A",
+                  co2Savings: "N/A",
+                  certifications: [],
+                };
                 
                 return (
                   <Card key={project.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -110,6 +148,48 @@ export default function Projects() {
                             </div>
                             <p className="text-muted-foreground leading-relaxed">{project.description}</p>
                           </div>
+
+                          {/* Sustainability Metrics */}
+                          <div className="bg-primary/5 rounded-lg p-4 space-y-3">
+                            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                              <Leaf className="h-4 w-4 text-primary" />
+                              Sustainability Impact
+                            </h3>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="flex items-start gap-2">
+                                <Recycle className="h-4 w-4 text-primary mt-0.5" />
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Material Reuse</p>
+                                  <p className="text-lg font-bold text-primary">{metrics.materialReuse}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <TrendingDown className="h-4 w-4 text-primary mt-0.5" />
+                                <div>
+                                  <p className="text-xs text-muted-foreground">CO₂ Savings</p>
+                                  <p className="text-lg font-bold text-primary">{metrics.co2Savings}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Certifications */}
+                          {metrics.certifications.length > 0 && (
+                            <div className="space-y-2">
+                              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                <Award className="h-4 w-4 text-primary" />
+                                Certifications
+                              </h3>
+                              <div className="flex flex-wrap gap-2">
+                                {metrics.certifications.map((cert) => (
+                                  <Badge key={cert} variant="outline" className="gap-1.5 border-primary/20 bg-primary/5">
+                                    <Award className="h-3 w-3" />
+                                    {cert}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
