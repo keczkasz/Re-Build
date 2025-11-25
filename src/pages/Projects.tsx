@@ -49,14 +49,8 @@ const projectContacts: Record<string, { name: string; role: string }> = {
 
 // EU Programs for each project
 const projectEUPrograms: Record<string, string[]> = {
-  "Green Quarter Mixed-Use Development": [
-    "Horizon Europe - Circular Cities",
-    "LIFE Programme - Climate Action"
-  ],
-  "Heritage Factory Adaptive Reuse": [
-    "EU Cohesion Policy - Urban Development",
-    "European Green Deal Initiative"
-  ],
+  "Green Quarter Mixed-Use Development": [],
+  "Heritage Factory Adaptive Reuse": [],
 };
 
 // Sustainability metrics for each project
