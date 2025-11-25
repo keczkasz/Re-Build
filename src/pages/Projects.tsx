@@ -13,7 +13,7 @@ import project1Floor from "/images/project-1-floorplan.jpg";
 import project1Visual from "/images/project-1-visualization.jpg";
 import project2Floor from "/images/project-2-floorplan.jpg";
 import project2Visual from "/images/project-2-visualization.jpg";
-import project3Floor from "/images/project-3-floorplan-v2.jpg";
+import project3Floor from "/images/project-3-floorplan-v3.jpg";
 import project3Visual from "/images/project-3-visualization.jpg";
 
 const projectImages: Record<string, { floorplan: string; visualization: string }> = {
