@@ -25,7 +25,7 @@ const projectImages: Record<string, { floorplan: string; visualization: string }
     floorplan: project2Floor,
     visualization: project2Visual,
   },
-  "Eco-Luxury Designer Residence": {
+  "Forest Residence": {
     floorplan: project3Floor,
     visualization: project3Visual,
   },
@@ -41,9 +41,9 @@ const projectContacts: Record<string, { name: string; role: string }> = {
     name: "Eng. Piotr Zieliński",
     role: "Project Manager & Heritage Conservation Specialist",
   },
-  "Eco-Luxury Designer Residence": {
-    name: "Katarzyna Lewandowska",
-    role: "Private Client & Design Enthusiast",
+  "Forest Residence": {
+    name: "Anna Kowalska",
+    role: "Private Homeowner & Sustainability Advocate",
   },
 };
 
@@ -63,7 +63,7 @@ const projectMetrics: Record<string, {
     co2Savings: "280 tons",
     certifications: ["Heritage Conservation Award", "BREEAM Excellent", "EU Green Building"],
   },
-  "Eco-Luxury Designer Residence": {
+  "Forest Residence": {
     materialReuse: "95%",
     co2Savings: "65 tons",
     certifications: ["Passive House", "Circular Economy Certified", "Zero Waste Design"],
