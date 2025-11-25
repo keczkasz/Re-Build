@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -104,7 +104,7 @@ const Connections = () => {
     }
   };
 
-  const handleMessage = async (recipientId: string) => {
+  const handleMessage = useCallback(async (recipientId: string) => {
     if (!user) {
       toast({
         title: "Authentication required",
@@ -116,14 +116,42 @@ const Connections = () => {
 
     // Navigate to messages page
     navigate('/messages');
-  };
+  }, [user, toast, navigate]);
 
-  const filteredProfiles = profiles.filter(profile => 
-    profile.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.user_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.specialties?.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Memoize search term change handler
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  // Memoize filtered profiles to avoid recalculation on every render
+  const filteredProfiles = useMemo(() => {
+    const searchLower = searchTerm.toLowerCase();
+    return profiles.filter(profile => 
+      profile.full_name?.toLowerCase().includes(searchLower) ||
+      profile.location?.toLowerCase().includes(searchLower) ||
+      profile.user_type?.toLowerCase().includes(searchLower) ||
+      profile.specialties?.some(s => s.toLowerCase().includes(searchLower))
+    );
+  }, [profiles, searchTerm]);
+
+  // Memoize filtered profiles by type
+  const contractorProfiles = useMemo(() => 
+    filteredProfiles.filter(p => 
+      p.user_type?.toLowerCase().includes('contractor') || 
+      p.user_type?.toLowerCase().includes('developer')
+    ), [filteredProfiles]);
+
+  const designerProfiles = useMemo(() => 
+    filteredProfiles.filter(p => 
+      p.user_type?.toLowerCase().includes('designer') || 
+      p.user_type?.toLowerCase().includes('architect') || 
+      p.user_type?.toLowerCase().includes('studio')
+    ), [filteredProfiles]);
+
+  const recyclerProfiles = useMemo(() => 
+    filteredProfiles.filter(p => 
+      p.user_type?.toLowerCase().includes('recycler')
+    ), [filteredProfiles]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -143,7 +171,7 @@ const Connections = () => {
               placeholder="Search by name, location, or specialty..." 
               className="pl-10"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
             />
           </div>
         </div>
@@ -182,58 +210,52 @@ const Connections = () => {
 
           <TabsContent value="contractors" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredProfiles
-                .filter(p => p.user_type?.toLowerCase().includes('contractor') || p.user_type?.toLowerCase().includes('developer'))
-                .map((profile) => (
-                  <ConnectionCard 
-                    key={profile.id}
-                    name={profile.company_name || profile.full_name || 'Unknown'}
-                    type={profile.user_type || 'User'}
-                    location={profile.location || 'Location not specified'}
-                    specialty={profile.specialties?.[0] || 'General'}
-                    description={profile.bio || 'No description available'}
-                    tags={profile.specialties || []}
-                    onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
-                  />
-                ))}
+              {contractorProfiles.map((profile) => (
+                <ConnectionCard 
+                  key={profile.id}
+                  name={profile.company_name || profile.full_name || 'Unknown'}
+                  type={profile.user_type || 'User'}
+                  location={profile.location || 'Location not specified'}
+                  specialty={profile.specialties?.[0] || 'General'}
+                  description={profile.bio || 'No description available'}
+                  tags={profile.specialties || []}
+                  onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
+                />
+              ))}
             </div>
           </TabsContent>
 
           <TabsContent value="designers" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredProfiles
-                .filter(p => p.user_type?.toLowerCase().includes('designer') || p.user_type?.toLowerCase().includes('architect') || p.user_type?.toLowerCase().includes('studio'))
-                .map((profile) => (
-                  <ConnectionCard 
-                    key={profile.id}
-                    name={profile.company_name || profile.full_name || 'Unknown'}
-                    type={profile.user_type || 'User'}
-                    location={profile.location || 'Location not specified'}
-                    specialty={profile.specialties?.[0] || 'General'}
-                    description={profile.bio || 'No description available'}
-                    tags={profile.specialties || []}
-                    onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
-                  />
-                ))}
+              {designerProfiles.map((profile) => (
+                <ConnectionCard 
+                  key={profile.id}
+                  name={profile.company_name || profile.full_name || 'Unknown'}
+                  type={profile.user_type || 'User'}
+                  location={profile.location || 'Location not specified'}
+                  specialty={profile.specialties?.[0] || 'General'}
+                  description={profile.bio || 'No description available'}
+                  tags={profile.specialties || []}
+                  onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
+                />
+              ))}
             </div>
           </TabsContent>
 
           <TabsContent value="recyclers" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredProfiles
-                .filter(p => p.user_type?.toLowerCase().includes('recycler'))
-                .map((profile) => (
-                  <ConnectionCard 
-                    key={profile.id}
-                    name={profile.company_name || profile.full_name || 'Unknown'}
-                    type={profile.user_type || 'User'}
-                    location={profile.location || 'Location not specified'}
-                    specialty={profile.specialties?.[0] || 'General'}
-                    description={profile.bio || 'No description available'}
-                    tags={profile.specialties || []}
-                    onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
-                  />
-                ))}
+              {recyclerProfiles.map((profile) => (
+                <ConnectionCard 
+                  key={profile.id}
+                  name={profile.company_name || profile.full_name || 'Unknown'}
+                  type={profile.user_type || 'User'}
+                  location={profile.location || 'Location not specified'}
+                  specialty={profile.specialties?.[0] || 'General'}
+                  description={profile.bio || 'No description available'}
+                  tags={profile.specialties || []}
+                  onConnect={() => handleConnect(profile.id, profile.full_name || 'User')}
+                />
+              ))}
             </div>
           </TabsContent>
         </Tabs>

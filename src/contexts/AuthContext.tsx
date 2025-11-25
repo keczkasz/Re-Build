@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -40,7 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, userType: string) => {
+  // Memoize auth functions to prevent unnecessary re-renders
+  const signUp = useCallback(async (email: string, password: string, fullName: string, userType: string) => {
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -71,9 +72,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error: any) {
       return { error };
     }
-  };
+  }, [toast]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -92,18 +93,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error: any) {
       return { error };
     }
-  };
+  }, [toast]);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     toast({
       title: "Signed out",
       description: "You have been signed out successfully.",
     });
-  };
+  }, [toast]);
+
+  // Memoize context value to prevent unnecessary re-renders
+  const value = useMemo(() => ({
+    user,
+    session,
+    loading,
+    signUp,
+    signIn,
+    signOut,
+  }), [user, session, loading, signUp, signIn, signOut]);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

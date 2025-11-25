@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { NavLink } from "@/components/NavLink";
 import { Recycle, Package, Users, LayoutDashboard, Plus, LogIn, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,14 +6,19 @@ import { UserMenu } from "./UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-export const Navigation = () => {
+export const Navigation = memo(() => {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Memoize navigation handlers
+  const handleHomeClick = useCallback(() => navigate('/'), [navigate]);
+  const handleAddMaterialClick = useCallback(() => navigate('/materials/new'), [navigate]);
+  const handleAuthClick = useCallback(() => navigate('/auth'), [navigate]);
 
   return (
     <nav className="border-b border-border bg-card sticky top-0 z-50 backdrop-blur-sm bg-card/95">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+        <div className="flex items-center gap-2 cursor-pointer" onClick={handleHomeClick}>
           <Recycle className="h-7 w-7 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">Re:Build</h1>
         </div>
@@ -66,14 +72,14 @@ export const Navigation = () => {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <Button variant="default" className="gap-2" onClick={() => navigate('/materials/new')}>
+              <Button variant="default" className="gap-2" onClick={handleAddMaterialClick}>
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">List Materials</span>
               </Button>
               <UserMenu />
             </>
           ) : (
-            <Button onClick={() => navigate('/auth')} className="gap-2">
+            <Button onClick={handleAuthClick} className="gap-2">
               <LogIn className="h-4 w-4" />
               Sign In
             </Button>
@@ -82,4 +88,6 @@ export const Navigation = () => {
       </div>
     </nav>
   );
-};
+});
+
+Navigation.displayName = "Navigation";

@@ -6,19 +6,32 @@ import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMaterials } from "@/hooks/useMaterials";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 const Marketplace = () => {
   const { data: materials = [], isLoading } = useMaterials();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
 
-  const filteredMaterials = materials.filter(material => {
-    const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         material.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || material.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  // Memoize filtered materials to avoid recalculation on every render
+  const filteredMaterials = useMemo(() => {
+    const searchLower = searchQuery.toLowerCase();
+    return materials.filter(material => {
+      const matchesSearch = material.title.toLowerCase().includes(searchLower) ||
+                           material.description?.toLowerCase().includes(searchLower);
+      const matchesCategory = categoryFilter === "all" || material.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [materials, searchQuery, categoryFilter]);
+
+  // Memoize event handlers
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const handleCategoryChange = useCallback((value: string) => {
+    setCategoryFilter(value);
+  }, []);
 
   if (isLoading) {
     return (
@@ -113,11 +126,11 @@ return (
                 placeholder="Search materials..." 
                 className="pl-10"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
               />
             </div>
             
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <Select value={categoryFilter} onValueChange={handleCategoryChange}>
               <SelectTrigger className="w-full md:w-48">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>

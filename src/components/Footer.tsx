@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Recycle } from 'lucide-react';
 
-export const Footer = () => {
+export const Footer = memo(() => {
   return (
     <footer className="bg-[#2c2c2c] text-white mt-auto">
       <div className="container mx-auto px-4 py-12">
@@ -110,4 +111,6 @@ export const Footer = () => {
       </div>
     </footer>
   );
-};
+});
+
+Footer.displayName = "Footer";

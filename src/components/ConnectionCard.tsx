@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ interface ConnectionCardProps {
   onConnect: () => void;
 }
 
-export const ConnectionCard = ({
+export const ConnectionCard = memo(({
   name,
   type,
   location,
@@ -60,4 +61,6 @@ export const ConnectionCard = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+ConnectionCard.displayName = "ConnectionCard";

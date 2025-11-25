@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ interface MaterialCardProps {
   condition: string;
 }
 
-export const MaterialCard = ({
+export const MaterialCard = memo(({
   title,
   category,
   location,
@@ -30,6 +31,7 @@ export const MaterialCard = ({
         <img 
           src={image} 
           alt={title}
+          loading="lazy"
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
         />
       </div>
@@ -62,4 +64,6 @@ export const MaterialCard = ({
       </CardFooter>
     </Card>
   );
-};
+});
+
+MaterialCard.displayName = "MaterialCard";

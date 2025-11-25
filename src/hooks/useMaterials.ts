@@ -21,5 +21,10 @@ export const useMaterials = () => {
       if (error) throw error;
       return data;
     },
+    // Performance optimizations
+    staleTime: 1000 * 60 * 2, // Consider data fresh for 2 minutes
+    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
+    refetchOnMount: false, // Don't refetch if data exists
+    refetchOnReconnect: true, // Refetch when connection is restored
   });
 };
