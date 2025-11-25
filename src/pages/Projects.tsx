@@ -25,6 +25,18 @@ const projectImages: Record<string, { floorplan: string; visualization: string }
   },
 };
 
+// Fictional contact persons for each project
+const projectContacts: Record<string, { name: string; role: string }> = {
+  "Green Quarter Mixed-Use Development": {
+    name: "Arch. Magdalena Wiśniewska",
+    role: "Lead Architect & Sustainability Coordinator",
+  },
+  "Heritage Factory Adaptive Reuse": {
+    name: "Eng. Piotr Zieliński",
+    role: "Project Manager & Heritage Conservation Specialist",
+  },
+};
+
 export default function Projects() {
   const { data: projects, isLoading } = useProjects();
   const { user } = useAuth();
@@ -70,7 +82,10 @@ export default function Projects() {
             <div className="space-y-8">
               {projects.map((project) => {
                 const images = projectImages[project.title];
-                const contactPerson = project.profiles?.company_name || project.profiles?.full_name || "Project Owner";
+                const contact = projectContacts[project.title] || { 
+                  name: "Project Manager", 
+                  role: "Project Coordinator" 
+                };
                 
                 return (
                   <Card key={project.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -125,12 +140,13 @@ export default function Projects() {
                           </div>
 
                           <div className="pt-4 border-t">
-                            <p className="text-sm text-muted-foreground mb-3">
-                              Contact: <span className="font-medium text-foreground">{contactPerson}</span>
-                            </p>
+                            <div className="mb-3">
+                              <p className="text-sm font-medium text-foreground">{contact.name}</p>
+                              <p className="text-sm text-muted-foreground">{contact.role}</p>
+                            </div>
                             <Button 
                               className="w-full gap-2" 
-                              onClick={() => handleContact(project.id, contactPerson)}
+                              onClick={() => handleContact(project.id, contact.name)}
                             >
                               <MessageCircle className="h-4 w-4" />
                               Contact Project Team
