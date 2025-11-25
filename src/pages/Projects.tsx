@@ -47,6 +47,22 @@ const projectContacts: Record<string, { name: string; role: string }> = {
   },
 };
 
+// EU Programs for each project
+const projectEUPrograms: Record<string, string[]> = {
+  "Green Quarter Mixed-Use Development": [
+    "Horizon Europe - Circular Cities",
+    "LIFE Programme - Climate Action"
+  ],
+  "Heritage Factory Adaptive Reuse": [
+    "EU Cohesion Policy - Urban Development",
+    "European Green Deal Initiative"
+  ],
+  "Forest Residence": [
+    "EIC Accelerator - Sustainable Housing",
+    "Circular Economy Action Plan"
+  ],
+};
+
 // Sustainability metrics for each project
 const projectMetrics: Record<string, { 
   materialReuse: string; 
@@ -99,12 +115,20 @@ export default function Projects() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl font-bold text-foreground">Circular Economy Projects</h1>
-            <p className="text-lg text-muted-foreground max-w-3xl">
-              Explore large-scale construction projects committed to circular economy principles. 
-              These projects actively seek recovered materials and sustainable partnerships.
-            </p>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div className="space-y-4">
+              <h1 className="text-4xl font-bold text-foreground">Circular Economy Projects</h1>
+              <p className="text-lg text-muted-foreground max-w-3xl">
+                Explore large-scale construction projects committed to circular economy principles. 
+                These projects actively seek recovered materials and sustainable partnerships.
+              </p>
+            </div>
+            {user && (
+              <Button onClick={() => navigate("/projects/new")} className="gap-2 shrink-0">
+                <Building2 className="h-4 w-4" />
+                Submit Project
+              </Button>
+            )}
           </div>
 
           {isLoading ? (
@@ -124,6 +148,7 @@ export default function Projects() {
                   co2Savings: "N/A",
                   certifications: [],
                 };
+                const euPrograms = projectEUPrograms[project.title] || [];
                 
                 return (
                   <Card key={project.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -148,6 +173,27 @@ export default function Projects() {
                             </div>
                             <p className="text-muted-foreground leading-relaxed">{project.description}</p>
                           </div>
+
+                          {/* EU Programs */}
+                          {euPrograms.length > 0 && (
+                            <div className="bg-[#003399]/5 border border-[#003399]/20 rounded-lg p-4 space-y-2">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded bg-[#003399] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[#FFCC00] font-bold text-sm">EU</span>
+                                </div>
+                                <div>
+                                  <h3 className="text-xs font-semibold text-foreground">Co-funded by the European Union</h3>
+                                  <div className="flex flex-wrap gap-1.5 mt-1">
+                                    {euPrograms.map((program) => (
+                                      <Badge key={program} variant="outline" className="text-xs border-[#003399]/30 bg-[#003399]/5 text-[#003399]">
+                                        {program}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
 
                           {/* Sustainability Metrics */}
                           <div className="bg-primary/5 rounded-lg p-4 space-y-3">
