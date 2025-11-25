@@ -64,6 +64,9 @@ export const Hero = () => {
             <img 
               src={heroImage} 
               alt="Sustainable construction with eco-friendly building materials" 
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl"
             />
           </div>
