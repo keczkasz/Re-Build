@@ -22,6 +22,7 @@ import AddMaterial from "./pages/AddMaterial";
 import EditProfile from "./pages/EditProfile";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
+import Projects from "./pages/Projects";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/connections" element={<ProtectedRoute><Connections /></ProtectedRoute>} />
             <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/projects" element={<Projects />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
