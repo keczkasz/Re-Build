@@ -57,10 +57,6 @@ const projectEUPrograms: Record<string, string[]> = {
     "EU Cohesion Policy - Urban Development",
     "European Green Deal Initiative"
   ],
-  "Forest Residence": [
-    "EIC Accelerator - Sustainable Housing",
-    "Circular Economy Action Plan"
-  ],
 };
 
 // Sustainability metrics for each project
@@ -285,12 +281,21 @@ export default function Projects() {
                           <div className="space-y-4">
                             <div className="space-y-2">
                               <h3 className="text-sm font-semibold text-foreground">Architectural Visualization</h3>
-                              <div className="rounded-lg overflow-hidden border">
+                              <div className="rounded-lg overflow-hidden border relative">
                                 <img 
                                   src={images.visualization} 
                                   alt={`${project.title} - Visualization`}
                                   className="w-full h-64 object-cover"
                                 />
+                                {euPrograms.length > 0 && (
+                                  <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm rounded px-2 py-1.5 shadow-md">
+                                    <img 
+                                      src="/images/eu-logo.png" 
+                                      alt="Co-funded by the European Union" 
+                                      className="h-8 w-auto"
+                                    />
+                                  </div>
+                                )}
                               </div>
                             </div>
                             <div className="space-y-2">
