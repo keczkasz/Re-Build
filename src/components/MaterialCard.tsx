@@ -1,9 +1,12 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, Edit, Trash2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface MaterialCardProps {
+  id?: string;
   title: string;
   category: string;
   location: string;
@@ -12,9 +15,13 @@ interface MaterialCardProps {
   postedDate: string;
   image: string;
   condition: string;
+  sellerId?: string;
+  onDelete?: (id: string) => void;
+  isMatched?: boolean;
 }
 
 export const MaterialCard = ({
+  id,
   title,
   category,
   location,
@@ -22,10 +29,21 @@ export const MaterialCard = ({
   price,
   postedDate,
   image,
-  condition
+  condition,
+  sellerId,
+  onDelete,
+  isMatched = false
 }: MaterialCardProps) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const isOwner = user && sellerId && user.id === sellerId;
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Card className={`overflow-hidden hover:shadow-lg transition-shadow duration-300 ${isMatched ? 'ring-2 ring-primary' : ''}`}>
+      {isMatched && (
+        <div className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 text-center">
+          ✓ Matches Project Needs
+        </div>
+      )}
       <div className="aspect-video overflow-hidden bg-muted">
         <img 
           src={image} 
@@ -58,7 +76,29 @@ export const MaterialCard = ({
           <Calendar className="h-3 w-3" />
           <span>{postedDate}</span>
         </div>
-        <Button size="sm">Contact Seller</Button>
+        <div className="flex items-center gap-2">
+          {isOwner ? (
+            <>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => navigate(`/marketplace/edit/${id}`)}
+              >
+                <Edit className="h-3 w-3 mr-1" />
+                Edit
+              </Button>
+              <Button 
+                size="sm" 
+                variant="destructive"
+                onClick={() => onDelete && id && onDelete(id)}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </>
+          ) : (
+            <Button size="sm">Contact Seller</Button>
+          )}
+        </div>
       </CardFooter>
     </Card>
   );

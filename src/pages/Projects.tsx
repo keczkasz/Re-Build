@@ -1,12 +1,16 @@
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MaterialCard } from "@/components/MaterialCard";
 import { Building2, MapPin, Calendar, DollarSign, MessageCircle, Loader2, Award, Leaf, Recycle, TrendingDown } from "lucide-react";
 import { useProjects } from "@/hooks/useProjects";
+import { useMaterials } from "@/hooks/useMaterials";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 // Import project images
 import project1Floor from "/images/project-1-floorplan.jpg";
@@ -78,9 +82,23 @@ const projectMetrics: Record<string, {
 
 export default function Projects() {
   const { data: projects, isLoading } = useProjects();
+  const { data: materials = [] } = useMaterials();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
+
+  // Match materials to projects based on materials_needed
+  const getMatchedMaterials = (materialsNeeded: string[]) => {
+    return materials.filter(material => {
+      const categoryMatch = materialsNeeded.some(need => 
+        need.toLowerCase().includes(material.category.toLowerCase()) ||
+        material.category.toLowerCase().includes(need.toLowerCase()) ||
+        material.title.toLowerCase().includes(need.toLowerCase())
+      );
+      return categoryMatch;
+    }).slice(0, 6); // Limit to 6 matched materials per project
+  };
 
   const handleContact = (projectId: string, contactName: string) => {
     if (!user) {
@@ -268,6 +286,62 @@ export default function Projects() {
                               Contact Project Team
                             </Button>
                           </div>
+
+                          {/* Materials Matching Section */}
+                          {project.materials_needed && project.materials_needed.length > 0 && (
+                            <div className="mt-6 pt-6 border-t">
+                              <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-sm font-semibold flex items-center gap-2">
+                                  <Recycle className="h-4 w-4 text-primary" />
+                                  Matching Materials Available ({getMatchedMaterials(project.materials_needed).length})
+                                </h4>
+                                {getMatchedMaterials(project.materials_needed).length > 3 && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setExpandedProject(expandedProject === project.id ? null : project.id)}
+                                  >
+                                    {expandedProject === project.id ? 'Show Less' : 'View All'}
+                                  </Button>
+                                )}
+                              </div>
+                              
+                              {getMatchedMaterials(project.materials_needed).length > 0 ? (
+                                <div className={`grid grid-cols-1 gap-3 ${expandedProject === project.id ? '' : 'max-h-[400px] overflow-hidden'}`}>
+                                  {getMatchedMaterials(project.materials_needed)
+                                    .slice(0, expandedProject === project.id ? undefined : 3)
+                                    .map((material) => (
+                                      <div key={material.id} className="border rounded-lg p-3 bg-primary/5 hover:bg-primary/10 transition-colors">
+                                        <div className="flex gap-3">
+                                          {material.images && material.images[0] && (
+                                            <img 
+                                              src={material.images[0]} 
+                                              alt={material.title}
+                                              className="w-20 h-20 object-cover rounded"
+                                            />
+                                          )}
+                                          <div className="flex-1 min-w-0">
+                                            <h5 className="font-semibold text-sm text-foreground truncate">{material.title}</h5>
+                                            <div className="flex items-center gap-2 mt-1">
+                                              <Badge variant="secondary" className="text-xs">{material.category}</Badge>
+                                              <Badge variant="outline" className="text-xs">{material.condition}</Badge>
+                                            </div>
+                                            <div className="flex items-center justify-between mt-2">
+                                              <span className="text-xs text-muted-foreground">{material.location}</span>
+                                              <span className="text-sm font-bold text-primary">€{material.price}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                </div>
+                              ) : (
+                                <p className="text-muted-foreground text-xs">
+                                  No matching materials currently available in marketplace.
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {/* Project Visualizations */}
@@ -319,6 +393,8 @@ export default function Projects() {
           )}
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 }
