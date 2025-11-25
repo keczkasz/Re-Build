@@ -7,11 +7,26 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMaterials } from "@/hooks/useMaterials";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Marketplace = () => {
-  const { data: materials = [], isLoading } = useMaterials();
+  const { data: materials = [], isLoading, refetch } = useMaterials();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [materialToDelete, setMaterialToDelete] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const filteredMaterials = materials.filter(material => {
     const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -19,6 +34,40 @@ const Marketplace = () => {
     const matchesCategory = categoryFilter === "all" || material.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
+
+  const handleDeleteClick = (id: string) => {
+    setMaterialToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!materialToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from('materials')
+        .delete()
+        .eq('id', materialToDelete);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Material deleted',
+        description: 'Your material has been removed from the marketplace.',
+      });
+
+      refetch();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setMaterialToDelete(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -164,6 +213,7 @@ return (
             {filteredMaterials.map((material) => (
               <MaterialCard
                 key={material.id}
+                id={material.id}
                 title={material.title}
                 category={material.category}
                 location={material.location}
@@ -172,11 +222,30 @@ return (
                 postedDate="Recently"
                 image={material.images?.[0] || mockMaterials[0].image}
                 condition={material.condition}
+                sellerId={material.seller_id}
+                onDelete={handleDeleteClick}
               />
           ))}
           </div>
         )}
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Material</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this material? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Footer />
     </div>
