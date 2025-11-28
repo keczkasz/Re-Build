@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Recycle, Users, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroImage from "@/assets/hero-sustainable-construction.jpg";
+import heroImage from "@/assets/hero-construction-site.png";
 
 export const Hero = () => {
   const navigate = useNavigate();
