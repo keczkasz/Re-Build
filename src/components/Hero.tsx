@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ArrowRight, Recycle, Users, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-construction-site.png";
@@ -60,12 +61,14 @@ export const Hero = () => {
           </div>
           
           {/* Right Image */}
-          <div className="relative lg:h-[600px] h-[400px]">
-            <img 
-              src={heroImage} 
-              alt="Sustainable construction with eco-friendly building materials" 
-              className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl"
-            />
+          <div className="relative">
+            <AspectRatio ratio={16 / 9}>
+              <img 
+                src={heroImage} 
+                alt="Sustainable construction with eco-friendly building materials" 
+                className="w-full h-full object-cover rounded-2xl shadow-2xl"
+              />
+            </AspectRatio>
           </div>
         </div>
       </div>
