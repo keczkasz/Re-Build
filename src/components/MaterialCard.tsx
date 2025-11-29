@@ -18,6 +18,7 @@ interface MaterialCardProps {
   sellerId?: string;
   onDelete?: (id: string) => void;
   isMatched?: boolean;
+  onContactSeller?: () => void;
 }
 
 export const MaterialCard = ({
@@ -32,11 +33,25 @@ export const MaterialCard = ({
   condition,
   sellerId,
   onDelete,
-  isMatched = false
+  isMatched = false,
+  onContactSeller
 }: MaterialCardProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const isOwner = user && sellerId && user.id === sellerId;
+  
+  const handleContactSeller = () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    if (onContactSeller) {
+      onContactSeller();
+    } else {
+      navigate('/messages');
+    }
+  };
+  
   return (
     <Card className={`overflow-hidden hover:shadow-lg transition-shadow duration-300 ${isMatched ? 'ring-2 ring-primary' : ''}`}>
       {isMatched && (
@@ -96,7 +111,7 @@ export const MaterialCard = ({
               </Button>
             </>
           ) : (
-            <Button size="sm">Contact Seller</Button>
+            <Button size="sm" onClick={handleContactSeller}>Contact Seller</Button>
           )}
         </div>
       </CardFooter>

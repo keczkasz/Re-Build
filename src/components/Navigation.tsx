@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Recycle, Package, Users, LayoutDashboard, Plus, LogIn, MessageCircle, Building2 } from "lucide-react";
+import { Recycle, Package, Users, LayoutDashboard, LogIn, MessageCircle, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "./UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
@@ -73,13 +73,7 @@ export const Navigation = () => {
 
         <div className="flex items-center gap-3">
           {user ? (
-            <>
-              <Button variant="default" className="gap-2" onClick={() => navigate('/materials/new')}>
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">List Materials</span>
-              </Button>
-              <UserMenu />
-            </>
+            <UserMenu />
           ) : (
             <Button onClick={() => navigate('/auth')} className="gap-2">
               <LogIn className="h-4 w-4" />
