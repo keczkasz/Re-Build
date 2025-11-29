@@ -31,7 +31,7 @@ const projectImages: Record<string, { floorplan: string; visualization: string }
   },
   "Forest Residence": {
     floorplan: project3Floor,
-    visualization: project3Visual,
+    visualization: "/images/forest-residence-photo.png",
   },
 };
 
@@ -111,10 +111,8 @@ export default function Projects() {
       return;
     }
     
-    toast({
-      title: "Contact request",
-      description: `Messaging feature coming soon! You want to contact ${contactName}.`,
-    });
+    // Navigate to messages page
+    navigate('/messages');
   };
 
   return (

@@ -53,7 +53,7 @@ export const ConnectionCard = ({
           ))}
         </div>
         
-        <Button className="w-full gap-2" variant="outline" onClick={onConnect}>
+        <Button className="w-full gap-2" onClick={onConnect}>
           <MessageCircle className="h-4 w-4" />
           Connect
         </Button>
